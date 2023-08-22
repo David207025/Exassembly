@@ -11,6 +11,8 @@ module.exports.run = (args) => {
   let loop_end = null;
   let loop_repeats = null;
 
+  let logs_file = null;
+
   function read() {
     const cmd_args = tokens;
     cmd_args.splice(0, 1);
@@ -24,6 +26,16 @@ module.exports.run = (args) => {
       loop_repeats = result.feedback;
     } else if (exit_code == 2) {
       loop_end = parseInt(line);
+    } else if (exit_code == 3) {
+      logs_file = result.feedback;
+      fs.writeFileSync(logs_file, "", "utf-8");
+    } else if (exit_code == 4) {
+      writtenData = fs.readFileSync(logs_file, "utf-8");
+      fs.writeFileSync(
+        logs_file,
+        writtenData + result.feedback + "\n",
+        "utf-8"
+      );
     }
 
     if (loop_repeats > 1 && line == loop_end) {
